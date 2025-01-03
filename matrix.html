@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کیر شدی</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            color: green;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00ff00;
+            border: none;
+            color: black;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <div id="controls">
+        <button id="play">کلیک کن رنگش هم عوض میشه</button>
+    </div>
+    <script>
+        const canvas = document.getElementById("matrix");
+        const ctx = canvas.getContext("2d");
+
+        // تنظیم اندازه canvas به اندازه کل صفحه
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // کاراکترهای ماتریکس
+        const matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()-=_+";
+        const matrixArray = matrixChars.split("");
+
+        const fontSize = 10; // اندازه فونت
+        const columns = canvas.width / fontSize; // تعداد ستون‌ها
+        const drops = Array.from({ length: columns }).fill(0); // موقعیت قطرات
+
+        function drawMatrix() {
+            // ایجاد افکت فید
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // تنظیم رنگ و اندازه فونت
+            ctx.fillStyle = "#00FF00"; // رنگ سبز
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // بازنشانی قطره به بالا یا حرکت به پایین
+                if (drops[i] * fontSize > canvas.height || Math.random() > 0.95) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 25); // سرعت انیمیشن
+
+        // افزودن قابلیت پخش آهنگ و لرزش
+        const playButton = document.getElementById("play");
+        const audio = new Audio("abol.mp3"); // مسیر فایل صوتی
+
+        playButton.addEventListener("click", () => {
+            if (navigator.vibrate) {
+                navigator.vibrate([10000]); // لرزش تلفن
+            }
+            audio.play(); // پخش آهنگ
+        });
+    </script>
+</body>
+</html>
