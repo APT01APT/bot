@@ -1,0 +1,291 @@
+<!DOCTYPE html> <!-- تعریف نوع سند HTML -->
+<html lang="en"> <!-- شروع تگ HTML و تعیین زبان -->
+<head>
+  <meta charset="UTF-8"> <!-- تعیین کدگذاری کاراکترها -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- تنظیمات نمای موبایل -->
+  <title>AI API Tester - Cyberpunk</title> <!-- عنوان صفحه -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css"> <!-- لینک به استایل CSS -->
+  <style>
+    body {
+      font-family: "Roboto Mono", monospace; /* تعیین فونت برای بدنه */
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* پس‌زمینه گرادیانت */
+      color: #e0e0e0; /* رنگ متن */
+      margin: 0; /* حذف حاشیه */
+      padding: 0; /* حذف پدینگ */
+      display: flex; /* استفاده از فلیکس باکس */
+      flex-direction: column; /* چیدمان عمودی */
+      justify-content: space-between; /* فاصله‌گذاری بین عناصر */
+      height: 100vh; /* ارتفاع 100 درصد نمای ویو */
+    }
+
+.response p {
+  font-size: 0.8rem; /* اندازه فونت کوچکتر برای پاراگراف‌ها */
+}
+
+    .container {
+      flex: 1; /* اجازه به کانتینر برای گسترش */
+      background: rgba(30, 30, 30, 0.9); /* پس‌زمینه با شفافیت */
+      border: 2px solid #03dac6; /* حاشیه */
+      border-radius: 15px; /* گوشه‌های گرد */
+      box-shadow: 0 0 20px #03dac6, 0 0 50px rgba(3, 218, 198, 0.5); /* سایه */
+      margin: 20px; /* حاشیه */
+      padding: 15px; /* پدینگ */
+      overflow-y: auto; /* فعال‌سازی اسکرول عمودی */
+      max-height: 80%; /* حداکثر ارتفاع */
+    }
+
+    h1 {
+      font-size: 1.8rem; /* اندازه فونت عنوان */
+      color: #ff0266; /* رنگ عنوان */
+      text-shadow: 0 0 10px #ff0266, 0 0 20px #ff0266; /* سایه متن */
+      margin-bottom: 10px; /* فاصله پایین */
+    }
+
+    .response {
+      margin-top: 10px; /* فاصله بالای پاسخ */
+      padding: 10px; /* پدینگ */
+      background: rgba(20, 20, 20, 0.8); /* پس‌زمینه با شفافیت */
+      border-radius: 10px; /* گوشه‌های گرد */
+      box-shadow: 0 0 10px #ff0266; /* سایه */
+      overflow-y: auto; /* فعال‌سازی اسکرول عمودی */
+      text-align: left; /* تراز متن به چپ */
+      max-height: 70%; /* حداکثر ارتفاع */
+    }
+
+    .code-block {
+      position: relative; /* موقعیت نسبی */
+      margin-bottom: 15px; /* فاصله پایین */
+    }
+
+    pre {
+      background: rgba(40, 40, 40, 0.9); /* پس‌زمینه با شفافیت برای کد */
+      padding: 8px; /* پدینگ */
+      border-radius: 5px; /* گوشه‌های گرد */
+      white-space: pre-wrap; /* حفظ فاصله‌ها */
+      word-wrap: break-word; /* شکستن کلمات */
+      color: #e0e0e0; /* رنگ متن */
+      font-size: 0.3rem; /* اندازه کوچک‌تر برای بلوک‌های کد */
+      overflow: auto; /* فعال‌سازی اسکرول */
+      border: 1px solid rgba(255, 255, 255, 0.1); /* حاشیه */
+      box-shadow: 0 0 10px rgba(3, 218, 198, 0.5); /* سایه */
+    }
+
+    code {
+      font-family: "Roboto Mono", monospace; /* تعیین فونت برای کد */
+      font-size: 0.3rem; /* اندازه کوچک‌تر برای کد */
+    }
+
+    .copy-button {
+      position: absolute; /* موقعیت مطلق */
+      top: 5px; /* فاصله از بالا */
+      right: 5px; /* فاصله از راست */
+      background: none; /* پس‌زمینه شفاف */
+      border: 1px solid #03dac6; /* حاشیه */
+      color: #03dac6; /* رنگ متن */
+      border-radius: 5px; /* گوشه‌های گرد */
+      padding: 5px 10px; /* پدینگ */
+      cursor: pointer; /* نشانگر ماوس به شکل دست */
+      font-size: 0.5rem; /* اندازه کوچک‌تر */
+      transition: 0.3s; /* انیمیشن انتقال */
+    }
+
+    .copy-button:hover {
+      background: #03dac6; /* تغییر پس‌زمینه در حالت هاور */
+      color: #000; /* تغییر رنگ متن در حالت هاور */
+    }
+
+    .input-container {
+      display: flex; /* استفاده از فلیکس باکس */
+      flex-direction: column; /* چیدمان عمودی */
+      align-items: center; /* تراز به مرکز */
+      background: rgba(20, 20, 20, 0.9); /* پس‌زمینه با شفافیت */
+      border-top: 2px solid #03dac6; /* حاشیه بالایی */
+      padding: 15px; /* پدینگ */
+    }
+
+    textarea {
+      width: 90%; /* عرض 90 درصد */
+      max-width: 600px; /* حداکثر عرض */
+      padding: 10px; /* پدینگ */
+      border: none; /* بدون حاشیه */
+      border-radius: 5px; /* گوشه‌های گرد */
+      background: rgba(50, 50, 50, 0.8); /* پس‌زمینه با شفافیت */
+      color: #e0e0e0; /* رنگ متن */
+      font-size: 0.8rem; /* اندازه فونت */
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* سایه */
+      outline: none; /* بدون حاشیه */
+      resize: none; /* غیر فعال‌سازی تغییر اندازه */
+      transition: 0.3s; /* انیمیشن انتقال */
+    }
+
+    textarea:focus {
+      border: 1px solid #03dac6; /* حاشیه در حالت فوکوس */
+      box-shadow: 0 0 20px #03dac6; /* سایه در حالت فوکوس */
+    }
+
+    button {
+      margin-top: 10px; /* فاصله بالای دکمه */
+      padding: 10px 120px; /* پدینگ */
+      background: linear-gradient(90deg, #ff0266, #03dac6); /* پس‌زمینه گرادیانت */
+      color: white; /* رنگ متن */
+      border: none; /* بدون حاشیه */
+      border-radius: 5px; /* گوشه‌های گرد */
+      cursor: pointer; /* نشانگر ماوس به شکل دست */
+      font-size: 1rem; /* اندازه فونت */
+      box-shadow: 0 0 10px #03dac6; /* سایه */
+      transition: 0.3s; /* انیمیشن انتقال */
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #03dac6, #ff0266); /* تغییر پس‌زمینه در حالت هاور */
+      box-shadow: 0 0 20px #03dac6; /* سایه در حالت هاور */
+    }
+
+    .loader {
+      border: 4px solid rgba(3, 218, 198, 0.3); /* حاشیه بارگذار */
+      border-top: 4px solid #03dac6; /* حاشیه بالایی بارگذار */
+      border-radius: 50%; /* دایره‌ای کردن */
+      width: 50px; /* عرض بارگذار */
+      height: 50px; /* ارتفاع بارگذار */
+      animation: spin 1s linear infinite; /* انیمیشن چرخش */
+      margin: 20px auto; /* فاصله خودکار */
+      display: none; /* پنهان کردن بارگذار */
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg); /* چرخش در 0 درجه */
+      }
+      100% {
+        transform: rotate(360deg); /* چرخش در 360 درجه */
+      }
+    }
+
+    p {
+      margin-bottom: 10px; /* فاصله پایین پاراگراف */
+    }
+  </style>
+</head>
+<body>
+  <div class="container"> <!-- شروع کانتینر اصلی -->
+    <h1>AD_ABOL_HACKER</h1> <!-- عنوان صفحه -->
+    <div class="response" id="responseBox"></div> <!-- جعبه پاسخ -->
+    <div class="loader" id="loader"></div> <!-- بارگذار -->
+  </div>
+
+  <div class="input-container"> <!-- شروع کانتینر ورودی -->
+    <textarea id="userInput" rows="3" placeholder="Enter Your Message"></textarea> <!-- ناحیه ورودی کاربر -->
+    <button id="submitButton">Send</button> <!-- دکمه ارسال -->    	
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script> <!-- لینک به کتابخانه هایلایت -->
+  <script>
+    const submitButton = document.getElementById("submitButton"); // دکمه ارسال
+    const userInput = document.getElementById("userInput"); // ورودی کاربر
+    const responseBox = document.getElementById("responseBox"); // جعبه پاسخ
+    const loader = document.getElementById("loader"); // بارگذار
+
+    submitButton.addEventListener("click", () => {
+      const question = userInput.value.trim();
+
+      if (!question) {
+        responseBox.textContent = "Please enter a question.";
+        responseBox.style.color = "#ff0266";
+        return;
+      }
+
+      loader.style.display = "block";
+      responseBox.innerHTML = "";
+      responseBox.style.color = "#e0e0e0";
+
+      fetch(`https://api.api4dev.ir/claude?question=${encodeURIComponent(question)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(data => {
+          loader.style.display = "none";
+          responseBox.innerHTML = "";
+
+          const lines = data.split("\n");
+          let isCode = false;
+          let codeContent = "";
+          let language = "";
+
+          lines.forEach(line => {
+            if (line.startsWith("```")) {
+              if (isCode) {
+                const block = document.createElement("div");
+                block.classList.add("code-block");
+
+                const copyButton = document.createElement("button");
+                copyButton.classList.add("copy-button");
+                copyButton.textContent = "Copy";
+
+                const pre = document.createElement("pre");
+                const code = document.createElement("code");
+
+                if (language) {
+                  const validLanguage = language.trim().toLowerCase().replace(/\s+/g, "");
+                  code.classList.add(`language-${validLanguage}`);
+                }
+
+                code.textContent = codeContent.trim();
+                pre.appendChild(code);
+                block.appendChild(pre);
+                block.appendChild(copyButton);
+                responseBox.appendChild(block);
+
+                // Add copy functionality
+                copyButton.addEventListener("click", () => {
+                  const textToCopy = code.textContent.trim();
+                  if (!navigator.clipboard) {
+                    alert("Clipboard API not supported.");
+                    return;
+                  }
+                  navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyButton.textContent = "Copied!";
+                    setTimeout(() => {
+                      copyButton.textContent = "Copy";
+                    }, 1500);
+                  }).catch(err => {
+                    console.error("Failed to copy text: ", err);
+                    alert("Failed to copy. Please try again.");
+                  });
+                });
+
+                hljs.highlightElement(code); // Highlight the code
+
+                isCode = false;
+                codeContent = "";
+                language = "";
+              } else {
+                isCode = true;
+                language = line.replace("```", "").trim();
+                codeContent = "";
+              }
+            } else if (isCode) {
+              codeContent += line + "\n";
+            } else {
+              const paragraph = document.createElement("p");
+              paragraph.textContent = line;
+              responseBox.appendChild(paragraph);
+            }
+          });
+
+          responseBox.scrollTo(0, responseBox.scrollHeight);
+        })
+        .catch(error => {
+          loader.style.display = "none";
+          responseBox.textContent = "خطا! دوباره امتحان کنید. ";
+          responseBox.style.color = "#ff0266";
+          console.error("Error details:", error);
+        });
+    });
+  </script>
+</body>
+</html>
